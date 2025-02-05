@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { fetchOpenWeatherData, OpenWeatherData } from "../../utils/api";
+import {
+  fetchOpenWeatherData,
+  OpenWeatherData,
+  OpenWeatherTempScale,
+} from "../../utils/api";
 import {
   Card,
   CardContent,
   Typography,
   CardActions,
-  Button,
   IconButton,
 } from "@mui/material";
 import { Loader2, Trash } from "lucide-react";
@@ -35,16 +38,18 @@ type WeatherCardState = "loading" | "error" | "success";
 
 const WeatherCard = ({
   city,
+  tempScale,
   onDelete,
 }: {
   city: string;
+  tempScale: OpenWeatherTempScale;
   onDelete?: () => void;
 }) => {
   const [weatherData, setWeatherData] = useState<OpenWeatherData | null>(null);
   const [weatherCardState, setWeatherCardState] =
     useState<WeatherCardState>("loading");
   useEffect(() => {
-    fetchOpenWeatherData(city)
+    fetchOpenWeatherData(city, tempScale)
       .then((data) => {
         setWeatherData(data);
         setWeatherCardState("success");
@@ -52,7 +57,7 @@ const WeatherCard = ({
       .catch((error) => {
         setWeatherCardState("error");
       });
-  }, [city]);
+  }, [city, tempScale]);
   if (weatherCardState === "loading")
     return (
       <WeatherCardContainer>
@@ -71,15 +76,17 @@ const WeatherCard = ({
         </Typography>
       </WeatherCardContainer>
     );
-
+  const temp = tempScale === "imperial" ? "\u2109" : "\u2103";
   return (
     <WeatherCardContainer onDelete={onDelete}>
       <Typography variant="h5">{city}</Typography>
       <Typography variant="body1">
-        {Math.round(weatherData.main.temp)}°C
+        {Math.round(weatherData.main.temp)}
+        {temp}
       </Typography>
       <Typography variant="body1">
-        Feels like: {Math.round(weatherData.main.feels_like)}°C
+        Feels like: {Math.round(weatherData.main.feels_like)}
+        {temp}
       </Typography>
     </WeatherCardContainer>
   );

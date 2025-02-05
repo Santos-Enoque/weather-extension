@@ -20,8 +20,11 @@ export interface OpenWeatherData {
         deg: number;
     };
 }
-export async function fetchOpenWeatherData(city: string) : Promise<OpenWeatherData> {
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${OPEN_WEATHER_API_KEY}`);
+
+export type OpenWeatherTempScale = "metric" | "imperial";
+
+export async function fetchOpenWeatherData(city: string, tempScale: OpenWeatherTempScale ) : Promise<OpenWeatherData> {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=${tempScale}&appid=${OPEN_WEATHER_API_KEY}`);
     if (!response.ok) {
         throw new Error("Failed to fetch weather data");
     }  
